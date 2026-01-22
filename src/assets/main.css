@@ -1,0 +1,81 @@
+/* ./src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+label{
+    font-weight: 400;
+    color: #1B1F38;
+}
+
+select {
+  border:1px solid#e5e7eb;
+
+  appearance: none; /* removes native arrow for custom ones */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  height: 50px;
+  padding-right: 2rem; /* space for the arrow */
+  background: url('data:image/svg+xml;base64,...') no-repeat right 0.75rem center;
+  background-size: 1rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="url"],
+input[type="tel"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="time"] {
+  /* border:1px solid#e5e7eb; */
+  /* padding: 2px; */
+  /* appearance: none; removes native arrow for custom ones */
+  /* -webkit-appearance: none; */
+  /* -moz-appearance: none; */
+  height: 50px ; /* space for the arrow */
+  /* background: url('data:image/svg+xml;base64,...') no-repeat right 0.75rem center; */
+  background-size: 1rem;
+}
+
+/* A more concise way using :not(), if you want to apply to ALL inputs EXCEPT checkbox */
+/* This assumes you want to apply these styles to ALL input types that are not checkboxes,
+   which might include radio buttons, submit buttons, etc., depending on the desired effect.
+   If you truly only want text-like inputs, the list above is more precise. */
+/*
+input:not([type="checkbox"]) {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 1.5rem 1rem;
+  background-size: 1rem;
+}
+*/
+
+input:focus, select:focus {
+  outline: none;
+  /* border-color: #747CDA; */
+  /* box-shadow: 0 0 0 1px #747CDA; */
+}
+
+.search input:focus{
+   outline: none;
+  height: auto !important ; /* space for the arrow */
+
+  /* border-color: red; */
+  /* background-color: red !important; */
+  box-shadow: none;
+}
+.search input{
+   outline: none;
+  height: auto !important ; /* space for the arrow */
+
+  /* border-color: red; */
+  /* background-color: red !important; */
+  box-shadow: none;
+}
