@@ -80,19 +80,19 @@ const openIndex = ref(0) // First FAQ open by default
 
 const faqs = [
   {
-    question: 'What is the +100% bonus?',
+    question: 'What is the +100% FAN Bonus?',
     answer:
-      "When you top up your FUN Wallet now, we'll double your credits! For example, if you purchase €50, you'll receive €100 in total credits. This is a limited-time offer available only during our pre-launch period."
+      "When you top up your FUN Wallet, we give you FREE bonus credits! For example, if you purchase €20, you'll receive 20 Real Credits PLUS 20 FAN Bonus Credits - that's 40 credits total to use on the platform!"
   },
   {
-    question: 'What are locked wallet credits?',
+    question: "What's the difference between Real Credits and FAN Bonus Credits?",
     answer:
-      "Your purchased credits (including the bonus) will be securely stored in your FUN Wallet but will be 'locked' until our platform officially launches. Once we go live, your credits will be instantly available to use for tipping creators, unlocking exclusive content, and accessing premium features."
+      "Real Credits are what you pay for and can be used for anything on the platform. FAN Bonus Credits are FREE extra credits we give you as a reward - they work the same way but are added on top of your purchase!"
   },
   {
-    question: 'When will the platform launch?',
+    question: 'When will I receive my credits?',
     answer:
-      "We're working hard to launch as soon as possible! All pre-launch customers will receive email notifications with launch updates. Your credits will be automatically unlocked and ready to use on launch day."
+      "Instantly! As soon as your payment is confirmed by Stripe, your credits will be immediately available in your FUN Wallet. You can start using them right away."
   },
   {
     question: 'Is my payment secure?',
@@ -100,19 +100,24 @@ const faqs = [
       "Absolutely! We use Stripe, one of the world's most trusted payment processors. Your payment details are encrypted and never stored on our servers. Stripe is PCI-DSS compliant, ensuring the highest level of security for your transactions."
   },
   {
-    question: 'Can I get a refund?',
+    question: 'What is a referral code?',
     answer:
-      "Since these are pre-launch credits at a special bonus rate, all purchases are final. However, if you have any issues or concerns, please contact our support team and we'll do our best to help."
+      "Referral codes are special codes shared by creators or friends. When you use a referral code during checkout, both you and the referrer may receive bonus benefits. Enter a referral code if you have one, or leave it blank."
   },
   {
     question: 'What can I use FUN Wallet credits for?',
     answer:
-      'Once the platform launches, you can use your credits to: tip your favorite creators, unlock exclusive premium content, access special features, subscribe to creator channels, and much more!'
+      'You can use your credits to: tip your favorite creators, unlock exclusive premium content, access special features, subscribe to creator channels, purchase digital items, and much more!'
   },
   {
     question: 'Do credits expire?',
     answer:
-      "No, your FUN Wallet credits never expire! Once unlocked at launch, they'll remain in your account until you use them."
+      "No, your FUN Wallet credits never expire! They'll remain in your account until you choose to use them."
+  },
+  {
+    question: 'Can I get a refund?',
+    answer:
+      "Digital credits are non-refundable once purchased. However, if you experience any issues with your payment or have concerns, please contact our support team and we'll do our best to help."
   }
 ]
 

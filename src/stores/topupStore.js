@@ -4,47 +4,52 @@ import { ref, computed } from 'vue'
 export const useTopupStore = defineStore(
   'topup',
   () => {
-    // Package definitions with bonus percentages
+    // Package definitions: €10 / €20 / €50 with FAN bonus
     const packages = ref([
       {
-        id: 'pkg-25',
-        amount: 25,
+        id: 'pkg-10',
+        amount: 10,
+        realCredits: 10,
+        bonusCredits: 10,
         bonusPercent: 100,
         badge: null,
-        popular: false
+        popular: false,
+        stripeLink: 'https://buy.stripe.com/test_pkg10' // Replace with actual Stripe Payment Link
+      },
+      {
+        id: 'pkg-20',
+        amount: 20,
+        realCredits: 20,
+        bonusCredits: 20,
+        bonusPercent: 100,
+        badge: 'Most Popular',
+        popular: true,
+        stripeLink: 'https://buy.stripe.com/test_pkg20' // Replace with actual Stripe Payment Link
       },
       {
         id: 'pkg-50',
         amount: 50,
+        realCredits: 50,
+        bonusCredits: 50,
         bonusPercent: 100,
-        badge: 'Most Popular',
-        popular: true
-      },
-      {
-        id: 'pkg-100',
-        amount: 100,
-        bonusPercent: 100,
-        badge: null,
-        popular: false
-      },
-      {
-        id: 'pkg-200',
-        amount: 200,
-        bonusPercent: 100,
-        badge: null,
-        popular: false
+        badge: 'Best Value',
+        popular: false,
+        stripeLink: 'https://buy.stripe.com/test_pkg50' // Replace with actual Stripe Payment Link
       }
     ])
 
     // Selected package
     const selectedPackageId = ref(null)
 
-    // User form data
+    // Referral code (from URL param or input)
+    const referralCode = ref('')
+
+    // User ID (if logged in)
+    const userId = ref(null)
+
+    // User form data (simplified)
     const userForm = ref({
-      name: '',
       email: '',
-      country: '',
-      userType: '', // 'fan' or 'creator'
       consent: false
     })
 
@@ -54,21 +59,35 @@ export const useTopupStore = defineStore(
     // Checkout session data
     const checkoutSession = ref(null)
 
+    // Wallet balances (Real + FAN Bonus)
+    const walletBalances = ref({
+      realWallet: 0,
+      bonusWallet: 0
+    })
+
+    // Transaction history
+    const transactions = ref([])
+
     // Get selected package
     const selectedPackage = computed(() => {
       return packages.value.find((pkg) => pkg.id === selectedPackageId.value) || null
     })
 
-    // Calculate bonus amount
+    // Calculate bonus amount (FAN bonus credits)
     const bonusAmount = computed(() => {
       if (!selectedPackage.value) return 0
-      return (selectedPackage.value.amount * selectedPackage.value.bonusPercent) / 100
+      return selectedPackage.value.bonusCredits
     })
 
-    // Calculate total FUN Wallet credits
+    // Real credits user gets
+    const realCredits = computed(() => {
+      return selectedPackage.value?.realCredits || 0
+    })
+
+    // Calculate total credits (real + bonus)
     const totalCredits = computed(() => {
       if (!selectedPackage.value) return 0
-      return selectedPackage.value.amount + bonusAmount.value
+      return selectedPackage.value.realCredits + selectedPackage.value.bonusCredits
     })
 
     // Pay now amount (what user pays)
@@ -89,6 +108,16 @@ export const useTopupStore = defineStore(
       }
     }
 
+    // Set referral code
+    function setReferralCode(code) {
+      referralCode.value = code
+    }
+
+    // Set user ID
+    function setUserId(id) {
+      userId.value = id
+    }
+
     // Update form field
     function updateFormField(field, value) {
       if (field in userForm.value) {
@@ -99,12 +128,10 @@ export const useTopupStore = defineStore(
     // Reset form
     function resetForm() {
       userForm.value = {
-        name: '',
         email: '',
-        country: '',
-        userType: '',
         consent: false
       }
+      referralCode.value = ''
     }
 
     // Clear selection
@@ -122,27 +149,56 @@ export const useTopupStore = defineStore(
       checkoutSession.value = session
     }
 
-    // Validate form
+    // Update wallet balances
+    function updateWalletBalances(real, bonus) {
+      walletBalances.value.realWallet = real
+      walletBalances.value.bonusWallet = bonus
+    }
+
+    // Add transaction to history
+    function addTransaction(transaction) {
+      transactions.value.unshift(transaction)
+    }
+
+    // Set transactions
+    function setTransactions(txns) {
+      transactions.value = txns
+    }
+
+    // Build Stripe redirect URL with metadata
+    function getStripeRedirectUrl() {
+      if (!selectedPackage.value) return null
+
+      const baseUrl = selectedPackage.value.stripeLink
+      const params = new URLSearchParams()
+
+      // Add client_reference_id for user tracking
+      if (userId.value) {
+        params.append('client_reference_id', userId.value)
+      }
+
+      // Prefill email if provided
+      if (userForm.value.email) {
+        params.append('prefilled_email', userForm.value.email)
+      }
+
+      // Build final URL with params
+      let finalUrl = baseUrl
+      if (params.toString()) {
+        finalUrl += (baseUrl.includes('?') ? '&' : '?') + params.toString()
+      }
+
+      return finalUrl
+    }
+
+    // Validate form (simplified - just need package and consent)
     const isFormValid = computed(() => {
-      return (
-        userForm.value.name.trim() !== '' &&
-        userForm.value.email.trim() !== '' &&
-        userForm.value.email.includes('@') &&
-        userForm.value.country.trim() !== '' &&
-        userForm.value.userType !== '' &&
-        userForm.value.consent === true &&
-        selectedPackageId.value !== null
-      )
+      return selectedPackageId.value !== null && userForm.value.consent === true
     })
 
     // Get form errors
     const formErrors = computed(() => {
       const errors = {}
-      if (!userForm.value.name.trim()) errors.name = 'Name is required'
-      if (!userForm.value.email.trim()) errors.email = 'Email is required'
-      else if (!userForm.value.email.includes('@')) errors.email = 'Invalid email format'
-      if (!userForm.value.country.trim()) errors.country = 'Country is required'
-      if (!userForm.value.userType) errors.userType = 'Please select user type'
       if (!userForm.value.consent) errors.consent = 'You must agree to continue'
       if (!selectedPackageId.value) errors.package = 'Please select a package'
       return errors
@@ -152,13 +208,18 @@ export const useTopupStore = defineStore(
       // State
       packages,
       selectedPackageId,
+      referralCode,
+      userId,
       userForm,
       isLoading,
       checkoutSession,
+      walletBalances,
+      transactions,
 
       // Getters
       selectedPackage,
       bonusAmount,
+      realCredits,
       totalCredits,
       payNowAmount,
       isFormValid,
@@ -167,18 +228,24 @@ export const useTopupStore = defineStore(
       // Actions
       selectPackage,
       selectPackageByAmount,
+      setReferralCode,
+      setUserId,
       updateFormField,
       resetForm,
       clearSelection,
       setLoading,
-      setCheckoutSession
+      setCheckoutSession,
+      updateWalletBalances,
+      addTransaction,
+      setTransactions,
+      getStripeRedirectUrl
     }
   },
   {
     persist: {
       key: 'topup-store',
       storage: sessionStorage,
-      paths: ['selectedPackageId', 'userForm']
+      paths: ['selectedPackageId', 'userForm', 'referralCode', 'walletBalances', 'transactions']
     }
   }
 )

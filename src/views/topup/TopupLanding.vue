@@ -7,9 +7,9 @@
     <section class="px-4 py-8 md:py-12">
       <div class="max-w-4xl mx-auto">
         <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-2">
-          Choose Your Package
+          Choose Your Credit Package
         </h2>
-        <p class="text-purple-200 text-center mb-8">Get +100% bonus credits on all packages!</p>
+        <p class="text-purple-200 text-center mb-8">Get +100% FAN bonus credits on all packages!</p>
 
         <PackageCards />
       </div>
@@ -37,7 +37,7 @@
         <div
           class="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mx-auto mb-4"
         ></div>
-        <p class="text-white text-lg">Preparing your checkout...</p>
+        <p class="text-white text-lg">Redirecting to Stripe...</p>
       </div>
     </div>
   </div>
@@ -48,7 +48,6 @@ import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTopupStore } from '@/stores/topupStore'
 import { useTracking } from '@/composables/useTracking'
-import { createTopupCheckout } from '@/api-services/topupApi'
 
 import HeroSection from '@/components/topup/HeroSection.vue'
 import PackageCards from '@/components/topup/PackageCards.vue'
@@ -60,18 +59,30 @@ const route = useRoute()
 const topupStore = useTopupStore()
 const { trackViewContent, trackInitiateCheckout } = useTracking()
 
-// Handle URL preselect
+// Handle URL params on mount
 onMounted(() => {
   // Track page view
   trackViewContent({
-    contentName: 'Topup Landing Page',
+    contentName: 'FUN Wallet - Buy Credits',
     currency: 'EUR'
   })
 
-  // Check for URL preselect: /topup?pkg=50
+  // Check for URL preselect: /topup?pkg=20
   const pkgParam = route.query.pkg
   if (pkgParam) {
     topupStore.selectPackageByAmount(pkgParam)
+  }
+
+  // Check for referral code: /topup?ref=CODE123
+  const refParam = route.query.ref
+  if (refParam) {
+    topupStore.setReferralCode(refParam.toUpperCase())
+  }
+
+  // Check for user_id (if logged in user)
+  const userIdParam = route.query.user_id
+  if (userIdParam) {
+    topupStore.setUserId(userIdParam)
   }
 })
 
@@ -85,54 +96,41 @@ const scrollToForm = () => {
   }
 }
 
-// Handle checkout submission
-const handleCheckout = async () => {
+// Handle checkout - redirect to Stripe Payment Link
+const handleCheckout = () => {
   if (!topupStore.isFormValid) return
 
   topupStore.setLoading(true)
 
-  try {
-    // Track initiate checkout
-    trackInitiateCheckout({
-      value: topupStore.payNowAmount,
-      currency: 'EUR',
-      packageId: topupStore.selectedPackageId,
-      userType: topupStore.userForm.userType
-    })
+  // Track initiate checkout
+  trackInitiateCheckout({
+    value: topupStore.payNowAmount,
+    currency: 'EUR',
+    packageId: topupStore.selectedPackageId,
+    referralCode: topupStore.referralCode
+  })
 
-    // Create checkout session
-    const response = await createTopupCheckout({
-      packageId: topupStore.selectedPackageId,
-      amount: topupStore.payNowAmount,
-      name: topupStore.userForm.name,
-      email: topupStore.userForm.email,
-      country: topupStore.userForm.country,
-      userType: topupStore.userForm.userType,
-      bonusPercent: topupStore.selectedPackage.bonusPercent,
-      totalCredits: topupStore.totalCredits,
-      successUrl: `${window.location.origin}/topup/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${window.location.origin}/topup/fail`
-    })
+  // Store checkout session info for success page
+  topupStore.setCheckoutSession({
+    packageId: topupStore.selectedPackageId,
+    amount: topupStore.payNowAmount,
+    realCredits: topupStore.realCredits,
+    bonus: topupStore.bonusAmount,
+    total: topupStore.totalCredits,
+    referralCode: topupStore.referralCode
+  })
 
-    if (response?.data?.checkout_url) {
-      // Store session info
-      topupStore.setCheckoutSession({
-        sessionId: response.data.session_id,
-        amount: topupStore.payNowAmount,
-        bonus: topupStore.bonusAmount,
-        total: topupStore.totalCredits
-      })
-
-      // Redirect to Stripe
-      window.location.href = response.data.checkout_url
-    } else {
-      throw new Error('Failed to create checkout session')
-    }
-  } catch (error) {
-    console.error('Checkout error:', error)
-    alert('Failed to create checkout. Please try again.')
-  } finally {
+  // Get Stripe redirect URL and redirect
+  const stripeUrl = topupStore.getStripeRedirectUrl()
+  
+  if (stripeUrl) {
+    // Small delay for UX
+    setTimeout(() => {
+      window.location.href = stripeUrl
+    }, 500)
+  } else {
     topupStore.setLoading(false)
+    alert('Please select a package first.')
   }
 }
 </script>

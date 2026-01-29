@@ -5,90 +5,66 @@
     <h3 class="text-xl md:text-2xl font-bold text-white mb-6">Complete Your Purchase</h3>
 
     <form @submit.prevent="handleSubmit" class="space-y-5">
-      <!-- Name Field -->
+      <!-- Email Field (Optional - for prefill) -->
       <div>
-        <label class="block text-sm font-medium text-purple-200 mb-2"> Full Name * </label>
-        <input
-          v-model="form.name"
-          type="text"
-          placeholder="Enter your full name"
-          :class="[
-            'w-full px-4 py-3 rounded-xl bg-white/10 border text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all',
-            errors.name ? 'border-red-500' : 'border-white/20'
-          ]"
-        />
-        <p v-if="errors.name" class="mt-1 text-sm text-red-400">{{ errors.name }}</p>
-      </div>
-
-      <!-- Email Field -->
-      <div>
-        <label class="block text-sm font-medium text-purple-200 mb-2"> Email Address * </label>
+        <label class="block text-sm font-medium text-purple-200 mb-2">
+          Email Address <span class="text-purple-400">(optional)</span>
+        </label>
         <input
           v-model="form.email"
           type="email"
           placeholder="your@email.com"
-          :class="[
-            'w-full px-4 py-3 rounded-xl bg-white/10 border text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all',
-            errors.email ? 'border-red-500' : 'border-white/20'
-          ]"
+          class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
         />
-        <p v-if="errors.email" class="mt-1 text-sm text-red-400">{{ errors.email }}</p>
+        <p class="mt-1 text-xs text-purple-400">We'll prefill this on checkout for convenience</p>
       </div>
 
-      <!-- Country Field -->
+      <!-- Referral Code Field -->
       <div>
-        <label class="block text-sm font-medium text-purple-200 mb-2"> Country * </label>
-        <select
-          v-model="form.country"
-          :class="[
-            'w-full px-4 py-3 rounded-xl bg-white/10 border text-white focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all',
-            errors.country ? 'border-red-500' : 'border-white/20',
-            !form.country ? 'text-purple-300/50' : ''
-          ]"
-        >
-          <option value="" disabled class="bg-slate-800">Select your country</option>
-          <option
-            v-for="country in countries"
-            :key="country.code"
-            :value="country.code"
-            class="bg-slate-800"
-          >
-            {{ country.name }}
-          </option>
-        </select>
-        <p v-if="errors.country" class="mt-1 text-sm text-red-400">{{ errors.country }}</p>
-      </div>
-
-      <!-- User Type Field -->
-      <div>
-        <label class="block text-sm font-medium text-purple-200 mb-2"> I am a... * </label>
-        <div class="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            @click="form.userType = 'fan'"
-            :class="[
-              'py-3 px-4 rounded-xl border-2 font-medium transition-all',
-              form.userType === 'fan'
-                ? 'bg-purple-600 border-purple-600 text-white'
-                : 'bg-white/5 border-white/20 text-purple-200 hover:border-purple-400/50'
-            ]"
-          >
-            <span class="text-lg mr-2">👤</span> Fan
-          </button>
-          <button
-            type="button"
-            @click="form.userType = 'creator'"
-            :class="[
-              'py-3 px-4 rounded-xl border-2 font-medium transition-all',
-              form.userType === 'creator'
-                ? 'bg-purple-600 border-purple-600 text-white'
-                : 'bg-white/5 border-white/20 text-purple-200 hover:border-purple-400/50'
-            ]"
-          >
-            <span class="text-lg mr-2">⭐</span> Creator
-          </button>
+        <label class="block text-sm font-medium text-purple-200 mb-2">
+          Referral Code <span class="text-purple-400">(optional)</span>
+        </label>
+        <div class="relative">
+          <input
+            v-model="referralCode"
+            type="text"
+            placeholder="Enter referral code"
+            class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all uppercase"
+          />
+          <div v-if="referralCode" class="absolute right-3 top-1/2 -translate-y-1/2">
+            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
         </div>
-        <p v-if="errors.userType" class="mt-1 text-sm text-red-400">{{ errors.userType }}</p>
+        <p class="mt-1 text-xs text-purple-400">Have a friend's code? Enter it here!</p>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+        <h4 class="text-sm font-medium text-purple-300 uppercase tracking-wider mb-3">Order Summary</h4>
+        <div class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="text-purple-200">Package</span>
+            <span class="text-white font-medium">€{{ topupStore.payNowAmount }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-purple-200">Real Credits</span>
+            <span class="text-white font-medium">€{{ topupStore.realCredits }}</span>
+          </div>
+          <div class="flex justify-between text-sm text-green-400">
+            <span>FAN Bonus Credits</span>
+            <span class="font-medium">+€{{ topupStore.bonusAmount }}</span>
+          </div>
+          <div class="border-t border-white/20 pt-2 mt-2">
+            <div class="flex justify-between">
+              <span class="text-purple-100 font-medium">Total Credits</span>
+              <span class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                €{{ topupStore.totalCredits }}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Consent Checkbox -->
@@ -134,8 +110,7 @@
               target="_blank"
               class="text-purple-400 hover:text-purple-300 underline"
               >Privacy Policy</a
-            >. I understand that credits are
-            <span class="font-semibold text-purple-100">locked until launch</span>.
+            >.
           </span>
         </label>
         <p v-if="errors.consent" class="mt-1 text-sm text-red-400">{{ errors.consent }}</p>
@@ -169,7 +144,7 @@
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
             </svg>
-            Processing...
+            Redirecting to Stripe...
           </span>
           <span v-else class="flex items-center justify-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,10 +152,10 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
               />
             </svg>
-            Proceed to Payment
+            Buy Credits - €{{ topupStore.payNowAmount }}
           </span>
         </button>
       </div>
@@ -194,7 +169,7 @@
 </template>
 
 <script setup>
-import { computed, watch, reactive } from 'vue'
+import { computed, watch, reactive, ref } from 'vue'
 import { useTopupStore } from '@/stores/topupStore'
 
 const emit = defineEmits(['submit'])
@@ -203,51 +178,12 @@ const topupStore = useTopupStore()
 
 // Local form state
 const form = reactive({
-  name: topupStore.userForm.name,
-  email: topupStore.userForm.email,
-  country: topupStore.userForm.country,
-  userType: topupStore.userForm.userType,
-  consent: topupStore.userForm.consent
+  email: topupStore.userForm.email || '',
+  consent: topupStore.userForm.consent || false
 })
 
-// Countries list
-const countries = [
-  { code: 'AT', name: 'Austria' },
-  { code: 'BE', name: 'Belgium' },
-  { code: 'BG', name: 'Bulgaria' },
-  { code: 'HR', name: 'Croatia' },
-  { code: 'CY', name: 'Cyprus' },
-  { code: 'CZ', name: 'Czech Republic' },
-  { code: 'DK', name: 'Denmark' },
-  { code: 'EE', name: 'Estonia' },
-  { code: 'FI', name: 'Finland' },
-  { code: 'FR', name: 'France' },
-  { code: 'DE', name: 'Germany' },
-  { code: 'GR', name: 'Greece' },
-  { code: 'HU', name: 'Hungary' },
-  { code: 'IE', name: 'Ireland' },
-  { code: 'IT', name: 'Italy' },
-  { code: 'LV', name: 'Latvia' },
-  { code: 'LT', name: 'Lithuania' },
-  { code: 'LU', name: 'Luxembourg' },
-  { code: 'MT', name: 'Malta' },
-  { code: 'NL', name: 'Netherlands' },
-  { code: 'PL', name: 'Poland' },
-  { code: 'PT', name: 'Portugal' },
-  { code: 'RO', name: 'Romania' },
-  { code: 'SK', name: 'Slovakia' },
-  { code: 'SI', name: 'Slovenia' },
-  { code: 'ES', name: 'Spain' },
-  { code: 'SE', name: 'Sweden' },
-  { code: 'GB', name: 'United Kingdom' },
-  { code: 'CH', name: 'Switzerland' },
-  { code: 'NO', name: 'Norway' },
-  { code: 'US', name: 'United States' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'AU', name: 'Australia' },
-  { code: 'NZ', name: 'New Zealand' },
-  { code: 'OTHER', name: 'Other' }
-]
+// Referral code
+const referralCode = ref(topupStore.referralCode || '')
 
 // Watch form changes and update store
 watch(
@@ -260,20 +196,20 @@ watch(
   { deep: true }
 )
 
+// Watch referral code and update store
+watch(referralCode, (newCode) => {
+  topupStore.setReferralCode(newCode.toUpperCase())
+})
+
 // Computed validation
 const errors = computed(() => {
   const errs = {}
-  if (!form.name.trim()) errs.name = 'Name is required'
-  if (!form.email.trim()) errs.email = 'Email is required'
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'Please enter a valid email'
-  if (!form.country) errs.country = 'Please select your country'
-  if (!form.userType) errs.userType = 'Please select user type'
   if (!form.consent) errs.consent = 'You must agree to continue'
   return errs
 })
 
 const isValid = computed(() => {
-  return Object.keys(errors.value).length === 0 && topupStore.selectedPackageId
+  return form.consent && topupStore.selectedPackageId
 })
 
 const isLoading = computed(() => topupStore.isLoading)

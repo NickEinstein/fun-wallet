@@ -12,11 +12,12 @@
             <span class="text-sm text-purple-300">Pay Now:</span>
             <span class="text-xl font-bold text-white">€{{ topupStore.payNowAmount }}</span>
           </div>
-          <div class="flex items-center gap-3 text-sm mt-1">
-            <span class="text-green-400"> +€{{ topupStore.bonusAmount }} bonus </span>
-            <span class="text-purple-200">
-              = <span class="font-semibold text-white">€{{ topupStore.totalCredits }}</span> total
-            </span>
+          <div class="flex items-center gap-2 text-sm mt-1">
+            <span class="text-purple-200">💰 {{ topupStore.realCredits }}</span>
+            <span class="text-purple-400">+</span>
+            <span class="text-green-400">🎁 {{ topupStore.bonusAmount }}</span>
+            <span class="text-purple-400">=</span>
+            <span class="font-semibold text-white">{{ topupStore.totalCredits }} credits</span>
           </div>
         </div>
 
@@ -29,16 +30,16 @@
         </button>
       </div>
 
-      <!-- Locked Credits Notice -->
-      <div class="mt-2 text-center text-xs text-purple-400">
+      <!-- Instant Credits Notice -->
+      <div class="mt-2 text-center text-xs text-green-400">
         <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
           <path
             fill-rule="evenodd"
-            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
             clip-rule="evenodd"
           />
         </svg>
-        Credits locked until platform launch
+        Credits available instantly after payment
       </div>
     </div>
   </Transition>
@@ -59,13 +60,17 @@
 
       <!-- Package Info -->
       <div class="bg-white/5 rounded-xl p-4 mb-4">
-        <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center justify-between mb-3">
           <span class="text-purple-300">Package</span>
           <span class="font-semibold text-white">€{{ topupStore.payNowAmount }}</span>
         </div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-purple-300 flex items-center gap-1">💰 Real Credits</span>
+          <span class="font-semibold text-white">{{ topupStore.realCredits }}</span>
+        </div>
         <div class="flex items-center justify-between text-green-400">
-          <span>Bonus (+100%)</span>
-          <span class="font-semibold">+€{{ topupStore.bonusAmount }}</span>
+          <span class="flex items-center gap-1">🎁 FAN Bonus</span>
+          <span class="font-semibold">+{{ topupStore.bonusAmount }}</span>
         </div>
       </div>
 
@@ -76,32 +81,31 @@
           <span class="text-xl font-bold text-white">€{{ topupStore.payNowAmount }}</span>
         </div>
         <div class="flex items-center justify-between">
-          <span class="text-purple-200">Total FUN Wallet</span>
+          <span class="text-purple-200">Total Credits</span>
           <span
             class="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400"
           >
-            €{{ topupStore.totalCredits }}
+            {{ topupStore.totalCredits }}
           </span>
         </div>
       </div>
 
-      <!-- Locked Notice -->
-      <div class="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3 mb-4">
+      <!-- Instant Credits Notice -->
+      <div class="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-4">
         <div class="flex items-start gap-2">
           <svg
-            class="w-4 h-4 text-purple-400 mt-0.5 flex-shrink-0"
+            class="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
             <path
               fill-rule="evenodd"
-              d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
               clip-rule="evenodd"
             />
           </svg>
-          <p class="text-xs text-purple-300">
-            Credits will be <span class="font-semibold text-purple-200">locked</span> in your wallet
-            and available at platform launch.
+          <p class="text-xs text-green-300">
+            Credits will be <span class="font-semibold text-green-200">instantly available</span> in your FUN Wallet after payment.
           </p>
         </div>
       </div>
